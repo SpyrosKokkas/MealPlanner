@@ -62,12 +62,13 @@ dependencies {
     // Dagger - Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    implementation (libs.androidx.hilt.navigation.compose)
 
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
-    // OkHttp Logging (optional but recommended for debugging)
+    // OkHttp Logging Interceptor
     implementation(libs.logging.interceptor)
 }
 

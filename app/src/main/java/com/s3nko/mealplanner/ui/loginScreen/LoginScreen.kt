@@ -1,5 +1,6 @@
 package com.s3nko.mealplanner.ui.loginScreen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,28 +13,55 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.s3nko.mealplanner.R
+import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LoginScreen (
+    viewModel: LoginViewModel = hiltViewModel(),
     navigateToMealsScreen: () -> Unit
 ){
 
     val email = remember{ mutableStateOf("") }
     val password = remember{mutableStateOf("")}
+    val context = LocalContext.current
+
+
+    // Observe the state events from the ViewModel
+    LaunchedEffect(viewModel.stateEvents) {
+        viewModel.stateEvents.collectLatest {
+            when (it){
+                is LoginEvents.NavigateToMeals -> {
+                    navigateToMealsScreen()
+                }
+
+                is LoginEvents.ShowError -> {
+                    val message = it.message
+                    Toast.makeText(context , message, Toast.LENGTH_LONG).show()
+                }
+                null -> Unit
+            }
+        }
+
+    }
+
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(color = Color.LightGray)
     ) {
 
@@ -96,7 +124,7 @@ fun LoginScreen (
             //Login Button
             Button(
                 onClick = {
-                    navigateToMealsScreen()
+                    viewModel.login(username = email.value, password = password.value)
                 }
             ){
                 Text(
