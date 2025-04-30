@@ -1,4 +1,4 @@
-package com.s3nko.mealplanner.data.repositories
+package com.s3nko.mealplanner.data.repositories.auth
 
 import androidx.lifecycle.ViewModel
 import com.s3nko.mealplanner.data.api.AuthApi

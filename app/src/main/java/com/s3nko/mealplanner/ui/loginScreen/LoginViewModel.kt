@@ -3,7 +3,7 @@ package com.s3nko.mealplanner.ui.loginScreen
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.s3nko.mealplanner.data.repositories.AuthRepository
+import com.s3nko.mealplanner.data.repositories.auth.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

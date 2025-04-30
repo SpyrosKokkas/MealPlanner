@@ -1,6 +1,7 @@
 package com.s3nko.mealplanner.network
 
 import com.s3nko.mealplanner.data.api.AuthApi
+import com.s3nko.mealplanner.data.api.MealsApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -64,12 +65,12 @@ object NetworkModule {
             .addConverterFactory(gsonConverterFactory)
             .build()
     }
-//
-//    @Singleton
-//    @Provides
-//    fun provideApiService(retrofit: Retrofit): MealsApi {
-//        return retrofit.create(MealsApi::class.java)
-//    }
+
+    @Singleton
+    @Provides
+    fun provideApiService(retrofit: Retrofit): MealsApi {
+        return retrofit.create(MealsApi::class.java)
+    }
 
     @Singleton
     @Provides
