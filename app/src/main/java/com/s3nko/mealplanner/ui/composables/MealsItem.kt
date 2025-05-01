@@ -42,7 +42,12 @@ fun MealsItem(
     meals: MealsUi,
 ) {
 
-    val description = "Description"
+    val description = meals.descr
+    val mealName = meals.name
+    val mealId = meals.id
+    val isSelected = meals.isSelected
+    val isLiked = meals.isLiked
+    val cal = meals.cal
 
     Card(
         modifier = Modifier
@@ -63,7 +68,7 @@ fun MealsItem(
                         .align(Alignment.CenterHorizontally)
                 ) {
                     Text(
-                        text = "Name",
+                        text = "$mealName",
                         color = Color.Black,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -122,7 +127,7 @@ fun MealsItem(
 
                 Column {
                     Text(
-                        text = description,
+                        text = "$description",
                         maxLines = if (expanded.value) Int.MAX_VALUE else 3,
                         overflow = TextOverflow.Ellipsis,
                         fontSize = 18.sp,
@@ -142,7 +147,7 @@ fun MealsItem(
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "Kcal / Μερίδα: 870",
+                    text = "Kcal / Μερίδα: $cal",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )

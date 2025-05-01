@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.s3nko.mealplanner.R
-import com.s3nko.mealplanner.ui.composables.MealsItem
+import com.s3nko.mealplanner.ui.composables.MealsPager
 import com.s3nko.mealplanner.ui.composables.RoundButtonsCompo
 
 @Composable
@@ -107,18 +107,10 @@ fun MealsScreen(
 
             Spacer(modifier = Modifier.padding(8.dp))
 
-            LazyColumn {
-                mealSchedules?.let { meals ->
-                    items(meals.size) { index ->
-                        val meal = meals[index]
-                        meal.meals?.let {
-                            MealsItem(
-                                it[index]
-                            )
-                        }
-                    }
-                }
-                }
-            }
+            MealsPager(
+                weekId = weekId,
+                mealsWeek = mealSchedules
+            )
         }
     }
+}
