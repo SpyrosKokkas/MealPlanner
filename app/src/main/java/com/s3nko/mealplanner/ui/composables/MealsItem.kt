@@ -40,6 +40,8 @@ import com.s3nko.mealplanner.ui.models.MealsUi
 @Composable
 fun MealsItem(
     meals: MealsUi,
+    onMealLiked: (mealId: Int, isLiked: Boolean) -> Unit,
+    onMealSelected: (mealId: Int, isSelected: Boolean) -> Unit,
 ) {
 
     val description = meals.descr
@@ -62,139 +64,136 @@ fun MealsItem(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-                Row(
+            Row(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = "$mealName",
+                    color = Color.Black,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
-                        .padding(top = 16.dp)
-                        .align(Alignment.CenterHorizontally)
-                ) {
-                    Text(
-                        text = "$mealName",
-                        color = Color.Black,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .width(200.dp)
-                    )
+                        .padding(top = 8.dp)
+                        .width(200.dp)
+                )
 
-                    Spacer(modifier = Modifier.padding(24.dp))
-
-                    Box(
-                        modifier = Modifier
-                            .size(45.dp)
-                            .clip(CircleShape)
-                            .background(Color.White)
-                            .clickable { },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_favorite_border ),
-                            contentDescription = "Like",
-
-                            modifier = Modifier
-                                .clickable(
-                                    enabled = true,
-                                    onClick = {
-                                    }
-                                ),
-                            contentScale = ContentScale.None
-
-                        )
-                    }
-
-                }
-
-                Spacer(modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.padding(24.dp))
 
                 Box(
                     modifier = Modifier
-                        .width(170.dp)
-                        .height(40.dp)
+                        .size(45.dp)
                         .clip(CircleShape)
-                        .background(Color.Gray)
+                        .background(Color.White)
                         .clickable { },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Μεσημέρι",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.Black
+                    Image(
+                        painter = painterResource(id =if (isLiked == true) R.drawable.ic_favorite_filled else R.drawable.ic_favorite_border),
+                        contentDescription = "Like",
+
+                        modifier = Modifier
+                            .clickable(
+                                enabled = true,
+                                onClick = {
+                                    if (isLiked != null) {
+                                        onMealLiked (mealId, isLiked)
+                                    }
+                                }
+                            ),
+                        contentScale = ContentScale.None
+
                     )
                 }
-                Spacer(modifier = Modifier.padding(8.dp))
-                val expanded = remember { mutableStateOf(false) }
 
-                Column {
-                    Text(
-                        text = "$description",
-                        maxLines = if (expanded.value) Int.MAX_VALUE else 3,
-                        overflow = TextOverflow.Ellipsis,
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(8.dp),
-                    )
+            }
 
-                    if (description?.length!! > 100) {
-                        Text(
-                            text = if (expanded.value) "Προβολή Λιγότερων" else "Προβολή Περισσότερων",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .clickable { expanded.value = !expanded.value }
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.padding(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .width(170.dp)
+                    .height(40.dp)
+                    .clip(CircleShape)
+                    .background(Color.Gray)
+                    .clickable { },
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
-                    text = "Kcal / Μερίδα: $cal",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
+                    text = "Μεσημέρι",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Black
                 )
-                Spacer(modifier = Modifier.padding(8.dp))
+            }
+            Spacer(modifier = Modifier.padding(8.dp))
+            val expanded = remember { mutableStateOf(false) }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .clip(CircleShape)
+            Column {
+                Text(
+                    text = "$description",
+                    maxLines = if (expanded.value) Int.MAX_VALUE else 3,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(8.dp),
+                )
 
-                        .clickable ( onClick = {}),
+                if (description?.length!! > 100) {
+                    Text(
+                        text = if (expanded.value) "Προβολή Λιγότερων" else "Προβολή Περισσότερων",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clickable { expanded.value = !expanded.value }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "Kcal / Μερίδα: $cal",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.padding(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .clip(CircleShape)
+                    .background(Color.LightGray)
+                    .clickable(onClick = {
+                        if (isSelected != null ){
+                            onMealSelected(mealId, isSelected)
+                        }
+                    }),
 
 
-                    contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    if (isSelected == true) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_delete),
                             contentDescription = "Delete",
                             modifier = Modifier.padding(end = 4.dp)
                         )
-
-
-                        Text(
-                            text ="Επιλογή",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier,
-                        )
                     }
+                    Text(
+                        text = if (isSelected == true) "Unselect" else "Select",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier,
+                    )
+
                 }
 
             }
         }
     }
-
-@Preview
-@Composable
-fun Preview () {
-    MealsItem(
-        meals = MealsUi(
-            id = 1,
-            name = "Meal Name",
-        )
-    )
 }
 

@@ -120,7 +120,14 @@ fun MealsScreen(
 
             MealsPager(
                 weekId = weekId,
-                mealsWeek = mealSchedules
+                mealsWeek = mealSchedules,
+                onMealSelected = { mealId, isSelected ->
+                    viewModel.selection(mealId, isSelected)
+
+                },
+                onMealLiked = { mealId, isLiked ->
+                    viewModel.like(mealId = mealId , isLiked = isLiked)
+                }
             )
         }
     }

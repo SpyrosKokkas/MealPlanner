@@ -33,7 +33,7 @@ class MealsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (weekId == null) {
-                   val result =  mealsRepository.getWeeklyMeals(userId = userId , weekId = 13)
+                   val result =  mealsRepository.getWeeklyMeals(userId = userId)
                     _state.value = result
                 } else {
                     val result = mealsRepository.getWeeklyMeals(userId = userId, weekId = weekId)
@@ -50,6 +50,28 @@ class MealsViewModel @Inject constructor(
 
     fun fetchWeeklyMeals(weekId: Int) {
         fetchAllData(userId, weekId)
+    }
+
+    fun selection(mealId: Int , isSelected: Boolean){
+        viewModelScope.launch {
+            try {
+                mealsRepository.updateMealSelection(mealId = mealId , isSelected = isSelected)
+                fetchAllData(userId)
+            } catch (e: Exception) {
+                Log.e("MealsViewModel", "Error updating meal selection: ${e.message}")
+            }
+        }
+    }
+
+    fun like (mealId: Int , isLiked: Boolean){
+        viewModelScope.launch {
+            try {
+                mealsRepository.updateMealLike(mealId = mealId , isLiked = isLiked)
+                fetchAllData(userId)
+            } catch (e: Exception) {
+                Log.e("MealsViewModel", "Error updating meal like: ${e.message}")
+            }
+        }
     }
 
 }

@@ -23,7 +23,9 @@ import com.s3nko.mealplanner.ui.models.MealSchedulesUi
 @Composable
 fun MealsPager(
     weekId : Int?,
-    mealsWeek: List<MealSchedulesUi>?
+    mealsWeek: List<MealSchedulesUi>?,
+    onMealLiked: (mealId: Int, isLiked: Boolean) -> Unit,
+    onMealSelected: (mealId: Int, isSelected: Boolean) -> Unit
 ){
     val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
     val listState = rememberLazyListState()
@@ -56,6 +58,12 @@ fun MealsPager(
                     if (selectedMeal != null) {
                         MealsItem(
                             meals = selectedMeal,
+                            onMealLiked = { mealId, isLiked ->
+                                onMealLiked(mealId, isLiked)
+                            },
+                            onMealSelected = { mealId, isSelected ->
+                                onMealSelected(mealId, isSelected)
+                            },
                         )
                     } else {
                         if (meals.isNotEmpty()) {
@@ -73,6 +81,12 @@ fun MealsPager(
                                 val meal = meals[page]
                                 MealsItem(
                                     meals = meal,
+                                    onMealLiked = { mealId, isLiked ->
+                                        onMealLiked(mealId, isLiked)
+                                    },
+                                    onMealSelected = { mealId, isSelected ->
+                                        onMealSelected(mealId, isSelected)
+                                    }
                                 )
                             }
                         }else {
