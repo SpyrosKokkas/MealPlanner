@@ -4,6 +4,7 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.s3nko.mealplanner.data.repositories.auth.AuthRepository
+import com.s3nko.mealplanner.network.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -12,8 +13,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authRepository: AuthRepository
-): ViewModel() {
+    private val authRepository: AuthRepository,
+    private val tokenManager: TokenManager
+    ): ViewModel() {
 
     private val _stateEvent = MutableSharedFlow<LoginEvents?>()
     val stateEvents: SharedFlow<LoginEvents?> = _stateEvent
@@ -29,7 +31,13 @@ class LoginViewModel @Inject constructor(
             if(empty && emailFormat && passwordFormat) {
                 try {
                     val loginResult = authRepository.loginUser(username = username, password = password)
+
                     if (loginResult?.token != null) {
+                        // Save userId and Token to the TokenManager
+                        tokenManager.saveToken(loginResult.token)
+                        loginResult.userId?.let {
+                            tokenManager.saveUserId(it)
+                        }
 
                         _stateEvent.emit(
                             LoginEvents.NavigateToMeals(
@@ -38,8 +46,6 @@ class LoginViewModel @Inject constructor(
                                 userEmail = loginResult.userEmail
                             )
                         )
-
-                       // TODO("Save token and user details")
                     }else {
                         _stateEvent.emit(LoginEvents.ShowError("Wrong credentials"))
                     }

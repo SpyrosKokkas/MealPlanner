@@ -1,10 +1,13 @@
 package com.s3nko.mealplanner.network
 
+import android.content.Context
+import android.content.SharedPreferences
 import com.s3nko.mealplanner.data.api.AuthApi
 import com.s3nko.mealplanner.data.api.MealsApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -20,9 +23,24 @@ object NetworkModule {
 
     private const val BASE_URL = "http://10.0.2.2:3000/"
 
+
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTokenManager(sharedPreferences: SharedPreferences): TokenManager {
+        return TokenManager(sharedPreferences)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        tokenManager: TokenManager
+    ): OkHttpClient {
 
 
         val apiKeyInterceptor = Interceptor { chain ->
@@ -32,7 +50,13 @@ object NetworkModule {
             val url = originalHttpUrl.newBuilder()
                 .build()
 
-            val request = original.newBuilder().url(url).build()
+            val token = tokenManager.getToken()
+
+            val request = original.newBuilder().apply {
+                token?.let {
+                    addHeader("Authorization", "$token")
+                }
+            }.build()
             chain.proceed(request)
         }
         val loggingInterceptor = HttpLoggingInterceptor().apply {
