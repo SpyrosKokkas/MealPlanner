@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 fun RoundButtonsCompo(@DrawableRes iconRes: Int,
                       contentDescription: String?,
                       onClick: () -> Unit,
+                      enabled: Boolean = true,
 ) {
     Box(
 
@@ -26,16 +27,18 @@ fun RoundButtonsCompo(@DrawableRes iconRes: Int,
             .size(45.dp)
             .clip(CircleShape)
             .background(Color.LightGray)
-            .clickable(onClick = onClick ),
+            .clickable(onClick = onClick , enabled = enabled),
         contentAlignment = Alignment.Center
     ) {
+        val iconTint = if (enabled) Color.Black else Color.Gray
 
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = contentDescription,
             modifier = Modifier
                 .size(30.dp)
-                .align(Alignment.Center)
+                .align(Alignment.Center),
+            tint = iconTint
         )
     }
 }

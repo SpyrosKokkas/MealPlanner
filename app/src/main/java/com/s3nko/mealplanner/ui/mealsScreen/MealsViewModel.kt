@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.s3nko.mealplanner.data.repositories.meals.MealsRepository
+import com.s3nko.mealplanner.network.TokenManager
 import com.s3nko.mealplanner.ui.models.WeekUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,29 +15,41 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MealsViewModel @Inject constructor(
-    private val mealsRepository: MealsRepository
+    private val mealsRepository: MealsRepository,
+    private val tokenManager: TokenManager
 ): ViewModel() {
+
+    private val userId = tokenManager.getUserId()
 
     private var _state = MutableStateFlow<WeekUi?>(null)
     var state: StateFlow<WeekUi?> = _state
 
     init {
-        fetchAllData()
+        fetchAllData(userId)
     }
 
-    private fun fetchAllData() {
+    private fun fetchAllData(userId : Int , weekId: Int? = null) {
 
         viewModelScope.launch {
             try {
-                // hard coded userId and week for testing
-                val result = mealsRepository.getWeeklyMeals(userId = 1 , weekId = 13)
-                _state.value = result
+                if (weekId == null) {
+                   val result =  mealsRepository.getWeeklyMeals(userId = userId , weekId = 13)
+                    _state.value = result
+                } else {
+                    val result = mealsRepository.getWeeklyMeals(userId = userId, weekId = weekId)
+                    _state.value = result
+                }
+
 
             } catch (e: Exception) {
-                // Διαχείριση σφάλματος
+                // Exception handling
                 Log.e("MealsViewModel", "Error fetching meals: ${e.message}")
             }
         }
+    }
+
+    fun fetchWeeklyMeals(weekId: Int) {
+        fetchAllData(userId, weekId)
     }
 
 }

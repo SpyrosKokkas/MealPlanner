@@ -64,10 +64,16 @@ fun MealsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
+                val enabledBack = weekId != 1
                 RoundButtonsCompo(
                     R.drawable.ic_back_arrow,
                     "Back Arrow",
-                    onClick = {},
+                    onClick = {
+                        if (weekId != null) {
+                            viewModel.fetchWeeklyMeals(weekId = weekId.minus(1))
+                        }
+                    },
+                    enabled = enabledBack
                 )
 
                 Spacer(modifier = Modifier.padding(8.dp))
@@ -97,11 +103,16 @@ fun MealsScreen(
 
                 Spacer(modifier = Modifier.padding(8.dp))
 
+                val enabled = weekId != maxWeek
                 RoundButtonsCompo(
                     R.drawable.ic_forward_arrow,
                     "Forward Arrow",
                     onClick = {
+                        if (weekId != null && maxWeek != null) {
+                            viewModel.fetchWeeklyMeals(weekId.plus(1))
+                        }
                     },
+                    enabled = enabled
                 )
             }
 
