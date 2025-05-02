@@ -8,3 +8,13 @@ data class UserLogin(
     val email: String,
     val password: String
 )
+
+data class AuthRequestRegister(
+    val user: UserRegister
+)
+
+data class UserRegister(
+    val email: String,
+    val password: String,
+    val password_confirmation: String
+)
