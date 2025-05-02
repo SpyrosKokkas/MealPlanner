@@ -65,22 +65,22 @@ class MealsViewModel @Inject constructor(
         fetchAllData(userId, weekId)
     }
 
-    fun selection(mealId: Int , isSelected: Boolean){
+    fun selection(mealId: Int , isSelected: Boolean, weekId: Int){
         viewModelScope.launch {
             try {
                 mealsRepository.updateMealSelection(mealId = mealId , isSelected = isSelected)
-                fetchAllData(userId)
+                fetchAllData(userId, weekId)
             } catch (e: Exception) {
                 Log.e("MealsViewModel", "Error updating meal selection: ${e.message}")
             }
         }
     }
 
-    fun like (mealId: Int , isLiked: Boolean){
+    fun like (mealId: Int , isLiked: Boolean, weekId: Int){
         viewModelScope.launch {
             try {
                 mealsRepository.updateMealLike(mealId = mealId , isLiked = isLiked)
-                fetchAllData(userId)
+                fetchAllData(userId, weekId)
             } catch (e: Exception) {
                 Log.e("MealsViewModel", "Error updating meal like: ${e.message}")
             }

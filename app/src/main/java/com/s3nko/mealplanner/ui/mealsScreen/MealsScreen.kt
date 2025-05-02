@@ -161,11 +161,15 @@ fun MealsScreen(
                 weekId = weekId,
                 mealsWeek = mealSchedules,
                 onMealSelected = { mealId, isSelected ->
-                    viewModel.selection(mealId, isSelected)
+                    if (weekId != null) {
+                        viewModel.selection(mealId, isSelected, weekId)
+                    }
 
                 },
                 onMealLiked = { mealId, isLiked ->
-                    viewModel.like(mealId = mealId , isLiked = isLiked)
+                    if (weekId != null) {
+                        viewModel.like(mealId = mealId , isLiked = isLiked, weekId)
+                    }
                 }
             )
         }
