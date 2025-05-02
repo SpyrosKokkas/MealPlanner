@@ -2,6 +2,7 @@ package com.s3nko.mealplanner.ui.mealsScreen
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -95,7 +96,8 @@ fun MealsScreen(
                         .width(220.dp)
                         .height(45.dp)
                         .background(Color.LightGray)
-                        .clickable(onClick = { }),
+                        .clickable(onClick = { })
+                        .border(2.dp, Color.Black, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
 

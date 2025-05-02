@@ -2,6 +2,7 @@ package com.s3nko.mealplanner.ui.composables
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -27,6 +28,7 @@ fun RoundButtonsCompo(@DrawableRes iconRes: Int,
             .size(45.dp)
             .clip(CircleShape)
             .background(Color.LightGray)
+            .border(2.dp, Color.Black, CircleShape)
             .clickable(onClick = onClick , enabled = enabled),
         contentAlignment = Alignment.Center
     ) {

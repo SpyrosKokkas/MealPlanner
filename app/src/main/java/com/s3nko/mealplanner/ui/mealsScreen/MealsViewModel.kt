@@ -52,7 +52,9 @@ class MealsViewModel @Inject constructor(
                 if (e.message == "HTTP 401 Unauthorized") {
                     // Handle unauthorized error
                     Log.e("MealsViewModel", "Unauthorized access: ${e.message}")
-
+                    viewModelScope.launch {
+                        _navigateToLogin.emit(Unit)
+                    }
                 }
             }
         }
@@ -69,9 +71,6 @@ class MealsViewModel @Inject constructor(
                 fetchAllData(userId)
             } catch (e: Exception) {
                 Log.e("MealsViewModel", "Error updating meal selection: ${e.message}")
-                viewModelScope.launch {
-                    _navigateToLogin.emit(Unit)
-                }
             }
         }
     }

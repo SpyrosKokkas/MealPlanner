@@ -2,6 +2,7 @@ package com.s3nko.mealplanner.ui.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,9 +61,10 @@ fun MealsItem(
     }
 
     Card(
-        modifier = Modifier
-            .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        modifier = Modifier
+            .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
+            .border(if (isSelected == true) 2.dp else (-1).dp, Color.Black, RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         onClick = {}
     ) {
@@ -129,7 +131,7 @@ fun MealsItem(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Μεσημέρι",
+                    text = "Lunch",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Black
@@ -149,7 +151,7 @@ fun MealsItem(
 
                 if (description?.length!! > 100) {
                     Text(
-                        text = if (expanded.value) "Προβολή Λιγότερων" else "Προβολή Περισσότερων",
+                        text = if (expanded.value) "Show less" else "Show more",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
@@ -160,7 +162,7 @@ fun MealsItem(
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "Kcal / Μερίδα: $cal",
+                text = "Kcal / Serving: $cal",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
