@@ -1,5 +1,6 @@
 package com.s3nko.mealplanner.ui.mealsScreen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,15 +13,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,7 @@ import com.s3nko.mealplanner.ui.composables.RoundButtonsCompo
 @Composable
 fun MealsScreen(
     viewModel: MealsViewModel = hiltViewModel(),
+    navigateToLogin: () -> Unit
 ) {
 
     val state = viewModel.state.collectAsState()
@@ -40,6 +43,14 @@ fun MealsScreen(
     val maxWeek = state.value?.maxWeekId
     val weekId = state.value?.weekId
     val mealSchedules = state.value?.mealSchedules
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.navigateToLogin.collect {
+        Toast.makeText(context , "Session expired. Please login again!", Toast.LENGTH_LONG).show()
+            navigateToLogin()
+        }
+    }
 
 
 

@@ -7,7 +7,9 @@ import com.s3nko.mealplanner.data.repositories.meals.MealsRepository
 import com.s3nko.mealplanner.network.TokenManager
 import com.s3nko.mealplanner.ui.models.WeekUi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,6 +25,9 @@ class MealsViewModel @Inject constructor(
 
     private var _state = MutableStateFlow<WeekUi?>(null)
     var state: StateFlow<WeekUi?> = _state
+
+    private val _navigateToLogin = MutableSharedFlow<Unit>()
+    val navigateToLogin: SharedFlow<Unit> = _navigateToLogin
 
     init {
         fetchAllData(userId)
@@ -44,6 +49,11 @@ class MealsViewModel @Inject constructor(
             } catch (e: Exception) {
                 // Exception handling
                 Log.e("MealsViewModel", "Error fetching meals: ${e.message}")
+                if (e.message == "HTTP 401 Unauthorized") {
+                    // Handle unauthorized error
+                    Log.e("MealsViewModel", "Unauthorized access: ${e.message}")
+
+                }
             }
         }
     }
@@ -59,6 +69,9 @@ class MealsViewModel @Inject constructor(
                 fetchAllData(userId)
             } catch (e: Exception) {
                 Log.e("MealsViewModel", "Error updating meal selection: ${e.message}")
+                viewModelScope.launch {
+                    _navigateToLogin.emit(Unit)
+                }
             }
         }
     }

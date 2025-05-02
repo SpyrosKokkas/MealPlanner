@@ -1,13 +1,14 @@
 package com.s3nko.mealplanner.ui.loginScreen
 
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.s3nko.mealplanner.data.repositories.auth.AuthRepository
 import com.s3nko.mealplanner.network.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,8 +18,22 @@ class LoginViewModel @Inject constructor(
     private val tokenManager: TokenManager
     ): ViewModel() {
 
-    private val _stateEvent = MutableSharedFlow<LoginEvents?>()
-    val stateEvents: SharedFlow<LoginEvents?> = _stateEvent
+    private val _stateEvent = MutableStateFlow<LoginEvents?>(null)
+    val stateEvents: StateFlow<LoginEvents?> = _stateEvent
+
+    //Checks if a token is available to skip the login screen
+    init {
+        val cToken = tokenManager.getToken()
+        val cUserId = tokenManager.getUserId()
+        Log.d("Login Token Available" , "Token: $cToken")
+        if (cToken != null) {
+            viewModelScope.launch {
+                _stateEvent.emit(
+                    LoginEvents.NavigateToMeals(token = cToken , userId = cUserId)
+                )
+            }
+        }
+    }
 
     fun login(password: String, username: String) {
 
@@ -35,15 +50,16 @@ class LoginViewModel @Inject constructor(
                     if (loginResult?.token != null) {
                         // Save userId and Token to the TokenManager
                         tokenManager.saveToken(loginResult.token)
+                        Log.d("Login" , "Token: ${loginResult.token}")
                         loginResult.userId?.let {
                             tokenManager.saveUserId(it)
+                            Log.d("Login" , "UserId: $it")
                         }
 
                         _stateEvent.emit(
                             LoginEvents.NavigateToMeals(
                                 token = loginResult.token,
                                 userId = loginResult.userId,
-                                userEmail = loginResult.userEmail
                             )
                         )
                     }else {

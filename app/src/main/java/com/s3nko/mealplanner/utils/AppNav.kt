@@ -29,7 +29,16 @@ fun AppNav() {
         }
 
         composable("meals_screen"){
-            MealsScreen()
+            MealsScreen(
+                navigateToLogin = {
+                    navController.navigate("login_screen"){
+                        popUpTo("meals_screen") {
+                            inclusive=true
+                        }
+                        launchSingleTop=true
+                    }
+                }
+            )
         }
     }
 }
