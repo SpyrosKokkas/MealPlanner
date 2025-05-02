@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +32,7 @@ fun MealsPager(
 ){
     val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
     val listState = rememberLazyListState()
+    val pagerStates = remember { mutableStateMapOf<String, PagerState>() }
 
 
     LaunchedEffect(weekId) {
@@ -70,11 +74,15 @@ fun MealsPager(
                     } else {
                         if (meals.isNotEmpty()) {
 
-                            val pagerState = rememberPagerState(
-                                initialPage = 0,
-                                initialPageOffsetFraction = 0.05F,
-                                pageCount = { meals.size }
-                            )
+                            val key = date ?: "unknown_$index"
+
+                            val pagerState = pagerStates.getOrPut(key) {
+                                rememberPagerState(
+                                    initialPage = 0,
+                                    initialPageOffsetFraction = 0.05F,
+                                    pageCount = { meals.size }
+                                )
+                            }
 
                             HorizontalPager(
                                 state = pagerState,
