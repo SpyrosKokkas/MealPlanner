@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,12 +49,19 @@ fun MealsScreen(
     val mealSchedules = state.value?.mealSchedules
     val context = LocalContext.current
 
+
     LaunchedEffect(Unit) {
-        viewModel.navigateToLogin.collect {
-        Toast.makeText(context , "Session expired. Please login again!", Toast.LENGTH_LONG).show()
-            navigateToLogin()
+        viewModel.navigateToLogin.collect { s ->
+            if (s == 1) {
+                Toast.makeText(context , "Session expired. Please login again!", Toast.LENGTH_LONG).show()
+                navigateToLogin()
+            } else if (s == 0 ){
+                Toast.makeText(context,"Logged out successfully", Toast.LENGTH_LONG).show()
+                navigateToLogin()
+            }
         }
     }
+
 
 
 
@@ -59,16 +69,32 @@ fun MealsScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Select Week",
-                color = Color.Black,
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp),
-                textAlign = TextAlign.Center,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
-            )
+            ) {
+                Text(
+                    text = "Select Week",
+                    color = Color.Black,
+                    modifier = Modifier.align(Alignment.Center),
+                    textAlign = TextAlign.Center,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                IconButton(
+                    onClick = {
+                        viewModel.clearToken(0)
+                    },
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_logout),
+                        contentDescription = "Logout",
+                        tint = Color.Black
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.padding(8.dp))
 

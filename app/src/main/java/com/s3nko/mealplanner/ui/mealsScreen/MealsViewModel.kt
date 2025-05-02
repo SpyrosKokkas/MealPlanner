@@ -26,8 +26,8 @@ class MealsViewModel @Inject constructor(
     private var _state = MutableStateFlow<WeekUi?>(null)
     var state: StateFlow<WeekUi?> = _state
 
-    private val _navigateToLogin = MutableSharedFlow<Unit>()
-    val navigateToLogin: SharedFlow<Unit> = _navigateToLogin
+    private val _navigateToLogin = MutableSharedFlow<Int>()
+    val navigateToLogin: SharedFlow<Int> = _navigateToLogin
 
     init {
         fetchAllData(userId)
@@ -53,7 +53,8 @@ class MealsViewModel @Inject constructor(
                     // Handle unauthorized error
                     Log.e("MealsViewModel", "Unauthorized access: ${e.message}")
                     viewModelScope.launch {
-                        _navigateToLogin.emit(Unit)
+                        val s = 1
+                        _navigateToLogin.emit(s)
                     }
                 }
             }
@@ -82,6 +83,17 @@ class MealsViewModel @Inject constructor(
                 fetchAllData(userId)
             } catch (e: Exception) {
                 Log.e("MealsViewModel", "Error updating meal like: ${e.message}")
+            }
+        }
+    }
+
+    fun clearToken(s: Int){
+        viewModelScope.launch {
+            try {
+                tokenManager.clearToken()
+                _navigateToLogin.emit(s)
+            } catch (e: Exception) {
+                Log.e("MealsViewModel", "Error clearing token: ${e.message}")
             }
         }
     }
