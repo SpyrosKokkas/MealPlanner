@@ -54,6 +54,7 @@ fun MealsPager(
 
                     val meals = mealSchedulesUi.meals ?: emptyList()
                     val selectedMeal = meals.find { it.isSelected == true }
+                    val date = mealSchedulesUi.date
 
                     if (selectedMeal != null) {
                         MealsItem(
@@ -64,6 +65,7 @@ fun MealsPager(
                             onMealSelected = { mealId, isSelected ->
                                 onMealSelected(mealId, isSelected)
                             },
+                            curDate = date
                         )
                     } else {
                         if (meals.isNotEmpty()) {
@@ -86,7 +88,8 @@ fun MealsPager(
                                     },
                                     onMealSelected = { mealId, isSelected ->
                                         onMealSelected(mealId, isSelected)
-                                    }
+                                    },
+                                    curDate = date
                                 )
                             }
                         }else {

@@ -20,6 +20,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.s3nko.mealplanner.R
 import com.s3nko.mealplanner.ui.models.MealsUi
+import com.s3nko.mealplanner.utils.isPastDate
 
 
 @Composable
@@ -42,6 +44,7 @@ fun MealsItem(
     meals: MealsUi,
     onMealLiked: (mealId: Int, isLiked: Boolean) -> Unit,
     onMealSelected: (mealId: Int, isSelected: Boolean) -> Unit,
+    curDate: String?,
 ) {
 
     val description = meals.descr
@@ -50,6 +53,11 @@ fun MealsItem(
     val isSelected = meals.isSelected
     val isLiked = meals.isLiked
     val cal = meals.cal
+
+    val selectIsAllowed = remember { mutableStateOf(true) }
+    LaunchedEffect(curDate) {
+        selectIsAllowed.value = !curDate.isPastDate()
+    }
 
     Card(
         modifier = Modifier
@@ -157,13 +165,14 @@ fun MealsItem(
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.padding(8.dp))
-
+            val backgroundColor = if (selectIsAllowed.value) Color.Gray else Color.LightGray
+            val tint = if (selectIsAllowed.value) Color.Black else Color.Gray
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
                     .clip(CircleShape)
-                    .background(Color.LightGray)
+                    .background(backgroundColor)
                     .clickable(onClick = {
                         if (isSelected != null ){
                             onMealSelected(mealId, isSelected)
@@ -188,6 +197,7 @@ fun MealsItem(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier,
+                        color = tint
                     )
 
                 }
