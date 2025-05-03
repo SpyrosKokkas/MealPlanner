@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.s3nko.mealplanner.ui.loginScreen.LoginScreen
+import com.s3nko.mealplanner.ui.authScreens.LoginScreen
 import com.s3nko.mealplanner.ui.mealsScreen.MealsScreen
-import com.s3nko.mealplanner.ui.registerScreen.RegisterScreen
+import com.s3nko.mealplanner.ui.authScreens.RegisterScreen
 
 @Composable
 fun AppNav() {

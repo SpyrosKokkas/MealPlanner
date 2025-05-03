@@ -1,4 +1,4 @@
-package com.s3nko.mealplanner.ui.loginScreen
+package com.s3nko.mealplanner.ui.authScreens
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -33,51 +34,55 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.s3nko.mealplanner.R
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.s3nko.mealplanner.R
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun LoginScreen (
-    viewModel: LoginViewModel = hiltViewModel(),
+fun RegisterScreen(
     navigateToMealsScreen: () -> Unit,
-    navigateToRegisterScreen: () -> Unit
-){
+    navigateToLoginScreen: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel()
+) {
 
-    val email = remember{ mutableStateOf("") }
-    val password = remember{mutableStateOf("")}
     val context = LocalContext.current
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+    val passwordVer = remember { mutableStateOf("") }
     val passwordVisibility = remember { mutableStateOf(false) }
+    val passwordVisibilityVer = remember { mutableStateOf(false) }
 
-    // Observe the state events from the ViewModel
-    LaunchedEffect(viewModel.stateEvents) {
-        viewModel.stateEvents.collectLatest {
-            when (it){
-                is LoginEvents.NavigateToMeals -> {
+
+    LaunchedEffect(viewModel.authEvents) {
+        viewModel.authEvents.collectLatest {
+            when (it) {
+                is AuthEvents.NavigateToMeals -> {
                     navigateToMealsScreen()
                 }
 
-                is LoginEvents.ShowError -> {
-                    val message = it.message
-                    Toast.makeText(context , message, Toast.LENGTH_LONG).show()
+                is AuthEvents.ShowError -> {
+                    val errorMessage = it.message
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+
                 }
+
                 null -> Unit
+
             }
         }
-
     }
-
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.LightGray)
+            .background(Color.LightGray)
     ) {
-
-        Column(modifier = Modifier.fillMaxSize(),
+        Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center)
-        {
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+
             Text(
                 text = "Meal Planner",
                 fontSize = 36.sp,
@@ -87,35 +92,33 @@ fun LoginScreen (
             Image(
                 painter = painterResource(id = R.drawable.ic_meal_logo),
                 contentDescription = "App Center Logo",
-                modifier = Modifier.size(250.dp)
+                modifier = Modifier
+                    .size(250.dp)
             )
 
-            Text (
-                text = "User Login",
+            Text(
+                text = "User Registration",
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
 
-            Spacer(modifier = Modifier.size(96.dp))
+
+            Spacer(modifier = Modifier.padding(42.dp))
 
 
-
-            // Email text field
             OutlinedTextField(
                 value = email.value,
-                onValueChange ={email.value = it },
+                onValueChange = { email.value = it },
                 label = {
-                    Text (
-                        text = "Email",
+                    Text(
+                        text = "Email"
                     )
                 },
                 maxLines = 1,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
             )
-            Spacer(modifier = Modifier.size(24.dp))
-
-            //Password text field
+            Spacer(modifier = Modifier.padding(16.dp))
             OutlinedTextField(
                 value = password.value,
                 onValueChange = { password.value = it },
@@ -146,34 +149,65 @@ fun LoginScreen (
                         )
                     }
                 }
-
             )
+            Spacer(modifier = Modifier.padding(8.dp))
+            OutlinedTextField(
+                value = passwordVer.value,
+                onValueChange = { passwordVer.value = it },
+                label = {
+                    Text(
+                        text = "Verify Password"
+                    )
+                },
+                maxLines = 1,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                visualTransformation = if (passwordVisibilityVer.value) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val icon = if (!passwordVisibilityVer.value)
+                        painterResource(id = R.drawable.ic_visibility)
+                    else
+                        painterResource(id = R.drawable.ic_visibility_hide)
 
-            Spacer(modifier = Modifier.size(24.dp))
-
-            //Login Button
-            Button(
-                onClick = {
-                    viewModel.login(username = email.value, password = password.value)
+                    IconButton(onClick = {
+                        passwordVisibilityVer.value = !passwordVisibilityVer.value
+                    }) {
+                        Icon(
+                            painter = icon,
+                            contentDescription = if (passwordVisibilityVer.value)
+                                "Hide password"
+                            else
+                                "Show password"
+                        )
+                    }
                 }
-            ){
+            )
+            Spacer(modifier = Modifier.padding(24.dp))
+            Button(onClick = {
+                viewModel.register(
+                    username = email.value,
+                    password = password.value,
+                    passwordVer = passwordVer.value
+                )
+            }) {
                 Text(
-                    text = "Login"
+                    text = "Register"
                 )
             }
-
             Row {
                 Text(
-                    text = "Don't have an account? Register "
+                    text = "Already have an account? Login "
                 )
                 Text(
                     text = "Here",
                     color = Color.Blue,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable { navigateToRegisterScreen() }
+                    modifier = Modifier.clickable { navigateToLoginScreen() }
 
                 )
             }
+
+
         }
     }
 }

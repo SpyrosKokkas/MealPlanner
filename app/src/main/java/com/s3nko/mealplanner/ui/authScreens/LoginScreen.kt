@@ -1,4 +1,4 @@
-package com.s3nko.mealplanner.ui.registerScreen
+package com.s3nko.mealplanner.ui.authScreens
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -34,54 +33,52 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.s3nko.mealplanner.R
+import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun RegisterScreen(
+fun LoginScreen (
+    viewModel: AuthViewModel = hiltViewModel(),
     navigateToMealsScreen: () -> Unit,
-    navigateToLoginScreen: () -> Unit,
-    viewModel: RegisterViewModel = hiltViewModel()
-) {
+    navigateToRegisterScreen: () -> Unit
+){
 
+    val email = remember{ mutableStateOf("") }
+    val password = remember{mutableStateOf("")}
     val context = LocalContext.current
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
-    val passwordVer = remember { mutableStateOf("") }
     val passwordVisibility = remember { mutableStateOf(false) }
-    val passwordVisibilityVer = remember { mutableStateOf(false) }
 
-
-    LaunchedEffect(viewModel.stateEvents) {
-        viewModel.stateEvents.collectLatest {
-            when (it) {
-                is RegisterEvents.NavigateToMeals -> {
+    // Observe the state events from the ViewModel
+    LaunchedEffect(viewModel.authEvents) {
+        viewModel.authEvents.collectLatest {
+            when (it){
+                is AuthEvents.NavigateToMeals -> {
                     navigateToMealsScreen()
                 }
 
-                is RegisterEvents.ShowError -> {
-                    val errorMessage = it.message
-                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-
+                is AuthEvents.ShowError -> {
+                    val message = it.message
+                    Toast.makeText(context , message, Toast.LENGTH_LONG).show()
                 }
 
                 null -> Unit
             }
         }
+
     }
+
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.LightGray)
+            .background(color = Color.LightGray)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
 
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center)
+        {
             Text(
                 text = "Meal Planner",
                 fontSize = 36.sp,
@@ -91,33 +88,35 @@ fun RegisterScreen(
             Image(
                 painter = painterResource(id = R.drawable.ic_meal_logo),
                 contentDescription = "App Center Logo",
-                modifier = Modifier
-                    .size(250.dp)
+                modifier = Modifier.size(250.dp)
             )
 
-            Text(
-                text = "User Registration",
+            Text (
+                text = "User Login",
                 fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.Bold
             )
 
+            Spacer(modifier = Modifier.size(96.dp))
 
-            Spacer(modifier = Modifier.padding(42.dp))
 
 
+            // Email text field
             OutlinedTextField(
                 value = email.value,
-                onValueChange = { email.value = it },
+                onValueChange ={email.value = it },
                 label = {
-                    Text(
-                        text = "Email"
+                    Text (
+                        text = "Email",
                     )
                 },
                 maxLines = 1,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
             )
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.size(24.dp))
+
+            //Password text field
             OutlinedTextField(
                 value = password.value,
                 onValueChange = { password.value = it },
@@ -148,65 +147,34 @@ fun RegisterScreen(
                         )
                     }
                 }
-            )
-            Spacer(modifier = Modifier.padding(8.dp))
-            OutlinedTextField(
-                value = passwordVer.value,
-                onValueChange = { passwordVer.value = it },
-                label = {
-                    Text(
-                        text = "Verify Password"
-                    )
-                },
-                maxLines = 1,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                visualTransformation = if (passwordVisibilityVer.value) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    val icon = if (!passwordVisibilityVer.value)
-                        painterResource(id = R.drawable.ic_visibility)
-                    else
-                        painterResource(id = R.drawable.ic_visibility_hide)
 
-                    IconButton(onClick = {
-                        passwordVisibilityVer.value = !passwordVisibilityVer.value
-                    }) {
-                        Icon(
-                            painter = icon,
-                            contentDescription = if (passwordVisibilityVer.value)
-                                "Hide password"
-                            else
-                                "Show password"
-                        )
-                    }
-                }
             )
-            Spacer(modifier = Modifier.padding(24.dp))
-            Button(onClick = {
-                viewModel.register(
-                    username = email.value,
-                    password = password.value,
-                    passwordVer = passwordVer.value
-                )
-            }) {
+
+            Spacer(modifier = Modifier.size(24.dp))
+
+            //Login Button
+            Button(
+                onClick = {
+                    viewModel.login(username = email.value, password = password.value)
+                }
+            ){
                 Text(
-                    text = "Register"
+                    text = "Login"
                 )
             }
+
             Row {
                 Text(
-                    text = "Already have an account? Login "
+                    text = "Don't have an account? Register "
                 )
                 Text(
                     text = "Here",
                     color = Color.Blue,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable { navigateToLoginScreen() }
+                    modifier = Modifier.clickable { navigateToRegisterScreen() }
 
                 )
             }
-
-
         }
     }
 }
